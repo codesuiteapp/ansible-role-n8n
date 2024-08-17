@@ -1,0 +1,66 @@
+version: "3"
+services:
+  n8n:
+    image: ${DOCKER_IMAGE}
+    container_name: "{{ container_name }}"
+    user: root
+    environment:
+      - N8N_HOST={{ n8n_host }}
+      - GENERIC_TIMEZONE=Asia/Seoul
+      - TZ=Asia/Seoul
+      - N8N_SECURE_COOKIE=false
+{% if use_mysql %}
+      - DB_MYSQLDB_DATABASE={{ mysql_database }}
+      - DB_MYSQLDB_HOST=db
+      - DB_MYSQLDB_PORT={{ mysql_port }}
+      - DB_MYSQLDB_USER={{ mysql_user }}
+      - DB_MYSQLDB_PASSWORD={{ mysql_password }}
+{% endif %}
+    labels:
+{% if use_traefik %}
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.entrypoints=web,websecure"
+      - "traefik.http.routers.n8n.rule=Host(`${trf_domain}`)"
+{% endif %}
+{% if use_traefik and use_traefik_tls %}
+      - "traefik.http.routers.n8n.tls=true"
+{% endif %}
+{% if use_flame %}
+      - "flame.type=application"
+      - "flame.name=n8n"
+      - "flame.url=http://{{ n8n_host}}:{{ n8n_port }}"
+{% endif %}
+    ports:
+      - {{ n8n_port }}:5678
+    volumes:
+      - {{ n8n_data }}:/home/node/.n8n
+    restart: unless-stopped
+{% if use_dkr_net %}
+    networks:
+      - {{ dkr_network }}
+{% endif %}
+{% if use_mysql %}
+  db:
+    image: {{ mysql_image }}
+    container_name: "n8n_db"
+    environment:
+      - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+      - MYSQL_DATABASE={{ mysql_database }}
+      - MYSQL_USER={{ mysql_user }}
+      - MYSQL_PASSWORD={{ mysql_password }}
+    volumes:
+      - {{ mysql_data }}:/var/lib/mysql
+    ports:
+      - {{ mysql_port }}:3306
+    restart: unless-stopped
+{% if use_dkr_net %}
+    networks:
+      - {{ dkr_network }}
+{% endif %}
+{% endif %}
+
+{% if use_dkr_net %}
+networks:
+  {{ dkr_network }}:
+    external: true
+{% endif %}

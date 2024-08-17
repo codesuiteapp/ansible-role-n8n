@@ -1,0 +1,41 @@
+---
+image_registry_server: "docker.io"
+n8n_image: "n8nio/n8n"
+n8n_ver: "latest"
+container_name: n8n
+n8n_port: 5678
+n8n_password: asdfg1
+n8n_host: "127.0.0.1"
+n8n_domain: ""
+
+use_mysql: true
+mysql_image: mysql
+mysql_root_password: n8n12341234
+
+mysql_database: n8n
+mysql_port: 3306
+mysql_user: n8n
+mysql_password: n8n1234
+mysql_data: "{{ app_data_dir }}/mysql-n8n"
+
+docker_compose_bin: "docker-compose"
+use_dkr_net: false
+use_traefik: false
+use_traefik_tls: false
+use_flame: true
+dkr_network: devops_net
+use_extra_hosts: false
+add_etc_host: "10.11.22.10   devops.com"
+
+app_home_dir: /app
+app_data_dir: /data
+app_logs_dir: /log
+
+n8n_home: "{{ app_home_dir }}/n8n-docker"
+n8n_data: "{{ app_data_dir }}/n8n"
+n8n_logs: "{{ app_logs_dir }}/n8n"
+
+create_user: false
+adm_user: "appadm"
+adm_group: "appadm"
+adm_uid: "1000"
