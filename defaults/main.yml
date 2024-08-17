@@ -10,13 +10,13 @@ n8n_domain: ""
 
 use_mysql: true
 mysql_image: mysql
-mysql_root_password: n8n12341234
+mysql_root_password: n8nP@ssw0rd1
 
 mysql_database: n8n
 mysql_port: 3306
 mysql_user: n8n
 mysql_password: n8n1234
-mysql_data: "{{ app_data_dir }}/mysql-n8n"
+mysql_data: "{{ app_data_dir }}/n8n-mysql"
 
 docker_compose_bin: "docker-compose"
 use_dkr_net: false
