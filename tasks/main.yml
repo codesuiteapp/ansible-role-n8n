@@ -6,13 +6,12 @@
     owner: "{{ adm_user }}"
     group: "{{ adm_group }}"
     mode: '0755'
-    force: false
-  with_items:
+  loop:
     - "{{ n8n_home }}"
     - "{{ n8n_data }}"
     - "{{ mysql_data }}"
 
-- name: Copy file
+- name: Copy files
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -20,7 +19,7 @@
     group: "{{ adm_group }}"
     mode: '0644'
     backup: true
-  with_items:
+  loop:
     - { src: '.env.j2', dest: '{{ n8n_home }}/.env' }
     - { src: 'docker-compose.yml.j2', dest: '{{ n8n_home }}/docker-compose.yml' }
 

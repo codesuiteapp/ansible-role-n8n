@@ -1,15 +1,23 @@
 - name: Start n8n
-  ansible.builtin.command: "{{ docker_compose_bin }} up --detach"
+  ansible.builtin.command: "{{ docker_compose_bin }} up --detach --force-recreate"
   args:
     chdir: "{{ n8n_home }}"
-  register: result
-  changed_when: result.changed
+  register: start_result
+  changed_when: start_result.rc == 0
+
+- name: Stop n8n
+  ansible.builtin.command: "{{ docker_compose_bin }} down"
+  args:
+    chdir: "{{ n8n_home }}"
+  register: stop_result
+  changed_when: stop_result.rc == 0
 
 - name: Restart n8n
-  ansible.builtin.shell:
-    "{{ docker_compose_bin }} down; {{ docker_compose_bin }} up --detach"
+  ansible.builtin.shell: |
+    {{ docker_compose_bin }} down
+    {{ docker_compose_bin }} up --detach
   args:
     chdir: "{{ n8n_home }}"
-  register: result
-  changed_when: result.changed
+  register: restart_result
+  changed_when: restart_result.rc == 0
   ignore_errors: true
